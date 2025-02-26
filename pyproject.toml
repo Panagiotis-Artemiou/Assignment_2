@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "assignment_2"
+version = "0.0.0"
+authors = [
+  { name="Panagiotis Artemiou", email="artemiou@bu.edu" },
+]
+description = "Workflow including newtonsmethod and materialmodels"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "matplotlib==3.10.0",
+    "numpy==1.26.4",
+    "pytest==7.1.2",
+    "pytest-cov==3.0.0",
+    "scipy==1.12.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Panagiotis-Artemiou/Assignment_1_new"
+"Bug Tracker" = "https://github.com/Panagiotis-Artemiou/Assignment_1_new/issues"
+
+[tool.pytest.ini_options]
+addopts = "--cov=src/FrameSolver3D --cov-report=xml"
+testpaths = [
+    "src/FrameSolver3D"
+]
