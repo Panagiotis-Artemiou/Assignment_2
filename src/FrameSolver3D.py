@@ -169,10 +169,13 @@ class FrameStructure:
         """
         Apply boundary conditions to the global stiffness matrix and force vector.
         """
+        fixed_dofs = []  # Store all fixed DOFs
+
         for node in self.nodes.values():
             for local_dof, is_fixed in enumerate(node.boundary_conditions):
                 if is_fixed:
                     global_dof = self.dof_map[(node.id, local_dof)]
+                    fixed_dofs.append(global_dof)
                     # Zero out the row and column for the fixed DOF
                     self.global_stiffness[global_dof, :] = 0
                     self.global_stiffness[:, global_dof] = 0
@@ -180,6 +183,28 @@ class FrameStructure:
                     self.global_stiffness[global_dof, global_dof] = 1
                     # Zero out the corresponding entry in the force vector
                     self.global_force[global_dof] = 0
+
+        # Convert to numpy array and sort in descending order to avoid indexing issues during deletion
+        fixed_dofs = np.array(sorted(fixed_dofs, reverse=True))
+
+        # Remove fixed DOFs from stiffness matrix and force vector
+        self.global_stiffness = np.delete(self.global_stiffness, fixed_dofs, axis=0)
+        self.global_stiffness = np.delete(self.global_stiffness, fixed_dofs, axis=1)
+        self.global_force = np.delete(self.global_force, fixed_dofs)
+
+        # Update dof_map: create a new mapping of remaining DOFs
+        new_dof_map = {}
+        counter = 0  # New index counter
+        for node in self.nodes.values():
+            for local_dof in range(len(node.boundary_conditions)):
+                old_dof = self.dof_map[(node.id, local_dof)]
+                if old_dof not in fixed_dofs:
+                    new_dof_map[(node.id, local_dof)] = counter
+                    counter += 1
+        
+        self.dof_map = new_dof_map  # Update mapping
+
+
 
     def solve(self):
         """
