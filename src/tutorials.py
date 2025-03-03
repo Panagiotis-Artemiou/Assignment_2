@@ -57,21 +57,26 @@ def test_example_problem():
     print("Example Problem:")
     print("Displacements at each node:")
     for node_id, node in structure.nodes.items():
-        print(f"Node {node_id}: {displacements[structure.dof_map[(node_id, 0)]]:6.4e}, "
-              f"{displacements[structure.dof_map[(node_id, 1)]]:6.4e}, "
-              f"{displacements[structure.dof_map[(node_id, 2)]]:6.4e}, "
-              f"{displacements[structure.dof_map[(node_id, 3)]]:6.4e}, "
-              f"{displacements[structure.dof_map[(node_id, 4)]]:6.4e}, "
-              f"{displacements[structure.dof_map[(node_id, 5)]]:6.4e}")
+        disp_values = []
+        for dof in range(6):  # Each node has up to 6 DOFs
+            if (node_id, dof) in structure.dof_map:  # Check if DOF is still in the mapping
+                disp_values.append(f"{displacements[structure.dof_map[(node_id, dof)]]:6.4e}")
+            else:
+                disp_values.append("Fixed")  # Indicate that this DOF was constrained
+
+        print(f"Node {node_id}: " + ", ".join(disp_values))
 
     print("\nReaction forces at each node:")
     for node_id, node in structure.nodes.items():
-        print(f"Node {node_id}: {reactions[structure.dof_map[(node_id, 0)]]:6.4e}, "
-              f"{reactions[structure.dof_map[(node_id, 1)]]:6.4e}, "
-              f"{reactions[structure.dof_map[(node_id, 2)]]:6.4e}, "
-              f"{reactions[structure.dof_map[(node_id, 3)]]:6.4e}, "
-              f"{reactions[structure.dof_map[(node_id, 4)]]:6.4e}, "
-              f"{reactions[structure.dof_map[(node_id, 5)]]:6.4e}")
+        reaction_values = []
+        for dof in range(6):  # Each node has up to 6 DOFs
+            if (node_id, dof) in structure.dof_map:  # Check if DOF is still in the mapping
+                reaction_values.append(f"{reactions[structure.dof_map[(node_id, dof)]]:6.4e}")
+            else:
+                reaction_values.append("Fixed")  # Indicate that this DOF was constrained
+
+        print(f"Node {node_id}: " + ", ".join(reaction_values))
 
 if __name__ == "__main__":
     test_example_problem()
+
